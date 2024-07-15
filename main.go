@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
-// go run main.go head -n1 test.txt
-func printFirstLine(fileName string) {
+// go run main.go head -n4 test.txt
+func printNLines(fileName string, n int) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -16,10 +18,10 @@ func printFirstLine(fileName string) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-
 	if scanner.Scan() {
-		firstLine := scanner.Text()
-		fmt.Println("\n" + firstLine + "\n")
+		for i := 0; i < n && scanner.Scan(); i++ {
+			fmt.Println(scanner.Text())
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -36,7 +38,6 @@ func catFiles(files []string) {
 		}
 
 		scanner := bufio.NewScanner(text)
-
 		for scanner.Scan() {
 			fmt.Println(scanner.Text())
 		}
@@ -47,15 +48,20 @@ func catFiles(files []string) {
 
 		text.Close()
 	}
-
 }
 
 func main() {
 	args := os.Args
 
-	if len(args) == 4 && args[1] == "head" && args[2] == "-n1" {
+	if len(args) == 4 && args[1] == "head" && strings.HasPrefix(args[2], "-n") {
+		nStr := strings.TrimPrefix(args[2], "-n")
+		n, err := strconv.Atoi(nStr)
+		if err != nil || n <= 0 {
+			fmt.Println("Please enter a valid number of lines:", nStr)
+			return
+		}
 		fileName := args[3]
-		printFirstLine(fileName)
+		printNLines(fileName, n)
 	} else if len(args) > 2 && args[1] == "cat" {
 		files := args[2:]
 		catFiles(files)
