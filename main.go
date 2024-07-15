@@ -19,18 +19,17 @@ func printNLines(fileName string, n int, numberLines bool, showBlanks bool) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	for i := 0; i < n && scanner.Scan(); i++ {
-		if numberLines && !showBlanks {
-			fmt.Printf("%d: %s\n", i+1, scanner.Text())
-		} else if numberLines && showBlanks {
+	lineCount := 0
 
-			if len(scanner.Text()) > 0 {
-				fmt.Printf("%d: %s\n", i+1, scanner.Text())
+	for lineCount < n && scanner.Scan() {
+		line := scanner.Text()
+		if showBlanks || len(line) > 0 {
+			if numberLines {
+				fmt.Printf("%d: %s\n", lineCount+1, line)
 			} else {
-				i--
+				fmt.Println(line)
 			}
-		} else {
-			fmt.Println(scanner.Text())
+			lineCount++
 		}
 	}
 
@@ -79,13 +78,15 @@ func main() {
 		// Parse arguments to get the number of lines and the flag for numbering lines
 		if strings.HasPrefix(args[2], "-n") {
 			nStr = strings.TrimPrefix(args[2], "-n")
-			if len(args) > 4 && args[4] == "-n" {
-				showNumberLines = true
+			if len(args) > 4 {
+				for _, arg := range args[4:] {
+					if arg == "-n" {
+						showNumberLines = true
+					} else if arg == "-b" {
+						showBlanks = true
+					}
+				}
 			}
-		}
-
-		if args[len(args)-1] == "-b" {
-			showBlanks = true
 		}
 
 		n, err := strconv.Atoi(nStr)
@@ -100,7 +101,7 @@ func main() {
 		catFiles(files)
 	} else {
 		fmt.Println("Usage:")
-		fmt.Println("  go run main.go head -n1 <filename>")
+		fmt.Println("  go run main.go head -n<number> <filename> [-n] [-b]")
 		fmt.Println("  go run main.go cat <filename1> <filename2> ...")
 	}
 }
