@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// go run main.go head -n4 test.txt -n -b
+// go run main.go head -n4 test3.txt -n -b
 // printNLines prints the first n lines of a file, optionally numbering the lines and/or blank lines
 func printNLines(fileName string, n int, numberLines bool, showBlanks bool) {
 	file, err := os.Open(fileName)
