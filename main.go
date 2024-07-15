@@ -32,6 +32,7 @@ func printNLines(fileName string, n int, numberLines bool) {
 	}
 }
 
+// go run main.go cat test.txt test2.txt
 // catFiles prints the content of multiple files.
 func catFiles(files []string) {
 	for _, file := range files {
