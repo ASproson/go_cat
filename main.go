@@ -27,7 +27,8 @@ func printFirstLine(fileName string) {
 	}
 }
 
-func catFiles(files ...string) {
+// go run main.go cat test.txt test2.txt
+func catFiles(files []string) {
 	for _, file := range files {
 		text, err := os.Open(file)
 		if err != nil {
@@ -52,18 +53,15 @@ func catFiles(files ...string) {
 func main() {
 	args := os.Args
 
-	if len(args) == 4 {
+	if len(args) == 4 && args[1] == "head" && args[2] == "-n1" {
 		fileName := args[3]
-		if args[1] == "head" && args[2] == "-n1" {
-			printFirstLine(fileName)
-		}
+		printFirstLine(fileName)
+	} else if len(args) > 2 && args[1] == "cat" {
+		files := args[2:]
+		catFiles(files)
+	} else {
+		fmt.Println("Usage:")
+		fmt.Println("  go run main.go head -n1 <filename>")
+		fmt.Println("  go run main.go cat <filename1> <filename2> ...")
 	}
-
-	if len(args) == 3 {
-		f1, f2 := args[1], args[2]
-		catFiles(f1, f2)
-	}
-
 }
-
-// go run main.go test.txt test2.txt
